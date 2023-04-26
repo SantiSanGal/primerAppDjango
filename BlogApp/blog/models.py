@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
@@ -23,7 +24,7 @@ class Post(models.Model):
     title = models.CharField(max_length=250)
 
     #También cadena de caracteres, pero sólo admite alfanuméricos y guiones, nada de tildes, ñ, etc.
-    slug = models.SlugField(max_length=250)
+    slug = models.SlugField(max_length=250, unique_for_date="publish") #único por día según fecha en publish
 
     #Cadena de texto de longitud variable, no requiere indicador de máximo.
     body = models.TextField()
@@ -55,3 +56,11 @@ class Post(models.Model):
     #se ordena según la fecha de publish
     class Meta:
         ordering = ["-publish"]
+
+    #Para poder utilizar la ruta en todo el proyecto
+    def get_absolute_url(self):
+        #esto en vez de tener la url completa en cada template
+        return reverse("blog:post_detail", args=[self.publish.year,
+                                                 self.publish.month,
+                                                 self.publish.day,
+                                                 self.slug])

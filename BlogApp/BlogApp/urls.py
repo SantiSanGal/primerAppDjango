@@ -18,6 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     #Super usuario no se comparte con el cliente final
-    path('admin/', admin.site.urls),
-    path('blog/', include("blog.urls", namespace="blog"))
+    path('admin/', admin.site.urls), #esta es la url del super usuario
+    path('blog/', include("blog.urls", namespace="blog")),
 ]

@@ -3,7 +3,7 @@
 {% block content %}
     {% for post in posts %}
         <h2>
-            <a href="{% url 'blog:post_detail' post.id %}">
+            <a href="{{post.get_absolute_url}}">
                 {{ post.title }}
             </a>
         </h2>
@@ -13,4 +13,7 @@
         {{ post.body|truncatewords:30|linebreaks}}
         <!-- sólo muestra las primeras 30 palabras, y luego agrega un salto de línea-->
     {% endfor %}
+
+    {% include "blog/pagination.html" with page=posts %}
+    {}
 {% endblock %}
