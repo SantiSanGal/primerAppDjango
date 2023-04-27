@@ -4,6 +4,7 @@ from .models import Post, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
+from taggit.models import Tag
 
 #Vistas basadas en clases
 from django.views.generic import ListView
@@ -17,9 +18,14 @@ class PostListView(ListView):
     paginate_by = 3
     template_name = "blog/post/list.html"
 
-def post_list(request):
+def post_list(request, tag_slug=None):
     #request trae la ruta que se consulta, ejemplo: GET http://127.0.0.1:8000/blog/posts/
     posts_list = Post.published.all()
+
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        posts_list = posts_list.filter(tags__in=[tag])
 
     #se pasa como parámetro la instancia que obtiene todos los post, y el 3 es la cantidad a mostrarse por página
     paginator = Paginator(posts_list, 3)
@@ -35,7 +41,7 @@ def post_list(request):
 
     #print(posts)
     #return HttpResponse(f"<h1>{posts[0].title}</h1>")
-    return render(request, "blog/post/list.html", {"posts": posts})
+    return render(request, "blog/post/list.html", {"posts": posts, "tag": tag})
 
 def post_detail(request, year, month, day, post):
     #try:

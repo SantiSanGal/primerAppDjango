@@ -87,8 +87,12 @@ WSGI_APPLICATION = 'BlogApp.wsgi.application'
 #Las bases de datos que van a interactuar con el proyecto, una o varias
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'nombredebasededatos',
+        'USER': 'postgres',
+        'PASSWORD': 'santiagoadmin1905',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
