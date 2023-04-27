@@ -1,0 +1,10 @@
+<h2>Add a comment</h2>
+<form action="POST">
+  <!--.as_p permite iterar los elementos dentro
+  de una etiqueta p-->
+  {{form.as_p}}
+    <!--crea un token temporal y protege de los
+    ataques csrf-->
+  {%csrf_token%}
+  <p><input type="submit" value="Add a comment"></p>
+</form>

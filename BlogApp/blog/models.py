@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 # Create your models here.
 
@@ -33,6 +34,7 @@ class Post(models.Model):
     #No crea nada en la bd
     objects = models.Manager()
     published = PublishedManager()
+    tags = TaggableManager()
 
 
     #Guarda la fecha y hora según la hora en la zona horaria configurada en el settings

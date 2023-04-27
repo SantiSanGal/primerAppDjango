@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 #from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-#vista por clase
-from django.views.generic import ListView
-# Create your views here.
-from .forms import EmailPostForm
+from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
+
+#Vistas basadas en clases
+from django.views.generic import ListView
+#Decorar una vista, para obligar a la vista a funcionar sólo si tiene un método POST
+from django.views.decorators.http import require_POST
+
 
 class PostListView(ListView):
     queryset = Post.published.all()
@@ -47,7 +50,14 @@ def post_detail(request, year, month, day, post):
                              publish__day=day,
                              slug=post)
 
-    return render(request, "blog/post/detail.html", {"post": post})
+    #Filtra los comentarios activos por post.
+    #La Clase/Modelo Post, no tiene un elemento
+    #llamado "comments", pero al agregar la fk en
+    #la Clase/Modelo Comment se referencia al Post
+    comments = post.comments.filter(active=True) #se pasa a la vista los comentarios activos por post
+    form = CommentForm() #se crea un nuevo objeto CommentForm y se pasa a la template
+
+    return render(request, "blog/post/detail.html", {"post": post, "form": form, "comments": comments})
 
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status = Post.Status.PUBLISHED)
@@ -66,3 +76,17 @@ def post_share(request, post_id):
     else:
         form = EmailPostForm()
     return render(request, "blog/post/share.html", {"post": post, "form": form, "sent": sent})
+
+@require_POST #<-- Este es el decorador
+def post_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    comment = None
+
+    form = CommentForm(data=request.POST) #trae lo que vino por POST e instancia el modelo CommentForm
+    if form.is_valid():
+        comment = form.save(commit=False) #commit=False, para no guardar aún en la BD
+        #Primero se debe obtener el id de Post con el get_object_or_404
+        comment.post = post
+        comment.save()
+    return render(request, "blog/post/comment.html", {"post": post, "comment": comment, "form": form})
+

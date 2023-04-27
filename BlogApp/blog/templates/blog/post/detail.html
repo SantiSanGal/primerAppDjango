@@ -12,4 +12,26 @@
         Share this post
     </a>
 </p>
+<!--se le da el alias de total_comments el número total de comentarios por post-->
+{%with comments.count as total_comments%}
+    <!--|pluralize, agrega una "s" para pluralizar la palabra comment-s
+    dependiendo de la cantidad que haya-->
+    <h2>{{total_comments}} comment{{total_comments|pluralize}}</h2>
+{%endwith%}
+
+{%for comment in comments%}
+    <!-- por cada comentario tendremos: -->
+    <div class="">
+        <p class="info">
+            <!--forloop.counter, dice cuántos elementos van por la iteración-->
+            Comment: - Comentario: {{forloop.counter}} by: - por: {{comment.name}}
+        </p>
+        {{comment.body|linebreaks}}
+    </div>
+    <!--En caso de que el for ^ venga vacío, se agrega el siguiente texto. -->
+    {%empty%}
+    <p>There are not comments - Aquí no hay comentarios</p>
+{%endfor%}
+<!--incluye la template del formulario para agregar algún comentario-->
+{%include "blog/post/includes/comment_form.html"%}
 {% endblock %}
